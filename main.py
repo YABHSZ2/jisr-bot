@@ -63,6 +63,12 @@ async def main():
         await callback.message.answer("هنا ستتمكن من إرسال فيديو لترجمته قريباً! 🎥")
         await callback.answer()
 
+    # --- هذا الجزء مخصص لاستقبال الفيديو وطباعة المعرف في السجلات ---
+    @dp.message(F.video)
+    async def get_video_id(message: Message):
+        print(f"VIDEO_FILE_ID: {message.video.file_id}")
+        await message.answer("تم استلام الفيديو بنجاح! تم طباعة المعرف في السجلات.")
+
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
