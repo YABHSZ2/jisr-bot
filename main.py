@@ -7,6 +7,9 @@ from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKe
 
 load_dotenv()
 
+# تم وضع معرف الفيديو هنا
+VIDEO_FILE_ID = "BAACAgQAAxkBAAZvqcoICKy4rCOMCwmhALx6bXHhYAAgUiAAKdSthTneJOAwURVHw9BA"
+
 async def main():
     bot = Bot(token=os.getenv("BOT_TOKEN"))
     dp = Dispatcher()
@@ -40,7 +43,12 @@ async def main():
         kb = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="🔙 عودة للقاموس", callback_data="dict")]
         ])
-        await callback.message.edit_text("كلمة (مرحباً): هنا سيتم عرض فيديو الإشارة قريباً جداً! 🎥", reply_markup=kb)
+        # إرسال الفيديو بدلاً من النص
+        await callback.message.answer_video(
+            video=VIDEO_FILE_ID,
+            caption="كلمة (مرحباً) 👋\nقم بتكرار الحركة أمام المرآة لتعلّمها!",
+            reply_markup=kb
+        )
         await callback.answer()
 
     @dp.callback_query(F.data == "back_to_main")
@@ -62,12 +70,6 @@ async def main():
     async def translate_handler(callback: CallbackQuery):
         await callback.message.answer("هنا ستتمكن من إرسال فيديو لترجمته قريباً! 🎥")
         await callback.answer()
-
-    # --- هذا الجزء مخصص لاستقبال الفيديو وطباعة المعرف في السجلات ---
-    @dp.message(F.video)
-    async def get_video_id(message: Message):
-        print(f"VIDEO_FILE_ID: {message.video.file_id}")
-        await message.answer("تم استلام الفيديو بنجاح! تم طباعة المعرف في السجلات.")
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
